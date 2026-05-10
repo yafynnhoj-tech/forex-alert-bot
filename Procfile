@@ -1,0 +1,1 @@
+worker: python scripts/forex_alert.py
