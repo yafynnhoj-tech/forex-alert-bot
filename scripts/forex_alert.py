@@ -9,8 +9,10 @@ import time
 # TELEGRAM
 # =========================
 
-TOKEN = "8527015467:AAGzCSMGAegfjgMtV7Alrf3-XkyBUIGs_gE"
-CHAT_ID = "1360272040"
+import os
+
+TOKEN = os.getenv("8527015467:AAGzCSMGAegfjgMtV7Alrf3-XkyBUIGs_gE")
+CHAT_ID = os.getenv("1360272040")
 
 # =========================
 # CONFIG
