@@ -1,4 +1,4 @@
-```python
+python
 import yfinance as yf
 from ta.momentum import RSIIndicator
 from ta.trend import MACD
@@ -26,8 +26,8 @@ PAIRS = [
 ]
 
 # Señales más realistas
-RSI_BUY = 20
-RSI_SELL = 85
+RSI_BUY = 30
+RSI_SELL = 70
 
 # =========================
 # MEMORY
@@ -54,4 +54,3 @@ def send_telegram(message):
 
     try:
         response = requests.post(url,
-```
