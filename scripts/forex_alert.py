@@ -1,18 +1,18 @@
+```python
 import yfinance as yf
 from ta.momentum import RSIIndicator
 from ta.trend import MACD
 import requests
 import schedule
 import time
+import os
 
 # =========================
 # TELEGRAM
 # =========================
 
-import os
-
-TOKEN = os.getenv("8527015467:AAGzCSMGAegfjgMtV7Alrf3-XkyBUIGs_gE")
-CHAT_ID = os.getenv("1360272040")
+TOKEN = os.getenv("TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 # =========================
 # CONFIG
@@ -25,6 +25,7 @@ PAIRS = [
     "AUDUSD=X"
 ]
 
+# Señales más realistas
 RSI_BUY = 20
 RSI_SELL = 85
 
@@ -40,6 +41,10 @@ last_signals = {}
 
 def send_telegram(message):
 
+    if not TOKEN or not CHAT_ID:
+        print("ERROR: TOKEN o CHAT_ID no configurados")
+        return
+
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     data = {
@@ -47,154 +52,6 @@ def send_telegram(message):
         "text": message
     }
 
-    requests.post(url, data=data)
-
-# =========================
-# ANALYSIS
-# =========================
-
-def analyze_market():
-
-    print("\n================================")
-    print("ANALIZANDO MERCADO...")
-    send_telegram("🚀 BOT ONLINE Y FUNCIONANDO")
-    print("================================\n")
-
-    for pair in PAIRS:
-        try:
-
-            # =========================
-            # DOWNLOAD DATA
-            # =========================
-
-            df = yf.download(
-                pair,
-                period="5d",
-                interval="15m"
-            )
-
-            close_prices = df["Close"].squeeze()
-
-            # =========================
-            # RSI
-            # =========================
-
-            df["RSI"] = RSIIndicator(
-                close=close_prices,
-                window=14
-            ).rsi()
-
-            # =========================
-            # MACD
-            # =========================
-
-            macd = MACD(close=close_prices)
-
-            df["MACD"] = macd.macd()
-            df["MACD_SIGNAL"] = macd.macd_signal()
-
-            # =========================
-            # LAST VALUES
-            # =========================
-
-            last_rsi = df["RSI"].iloc[-1]
-            last_macd = df["MACD"].iloc[-1]
-            last_signal = df["MACD_SIGNAL"].iloc[-1]
-
-            # =========================
-            # PRINT STATUS
-            # =========================
-
-            print(
-                f"{pair} | RSI: {last_rsi:.2f} | "
-                f"MACD: {last_macd:.4f}"
-            )
-
-            # =========================
-            # BUY SIGNAL
-            # =========================
-
-            if (
-                last_rsi <= RSI_BUY
-                and last_macd > last_signal
-            ):
-
-                # evitar spam
-                if last_signals.get(pair) != "BUY":
-
-                    message = f"""
-🟢 POSIBLE COMPRA
-
-Par: {pair}
-
-RSI: {last_rsi:.2f}
-
-MACD CONFIRMADO ✅
-"""
-
-                    print(message)
-
-                    send_telegram(message)
-
-                    last_signals[pair] = "BUY"
-
-            # =========================
-            # SELL SIGNAL
-            # =========================
-
-            elif (
-                last_rsi >= RSI_SELL
-                and last_macd < last_signal
-            ):
-
-                # evitar spam
-                if last_signals.get(pair) != "SELL":
-
-                    message = f"""
-🔴 POSIBLE VENTA
-
-Par: {pair}
-
-RSI: {last_rsi:.2f}
-
-MACD CONFIRMADO ✅
-"""
-
-                    print(message)
-
-                    send_telegram(message)
-
-                    last_signals[pair] = "SELL"
-
-            # =========================
-            # NO SIGNAL
-            # =========================
-
-            else:
-
-                last_signals[pair] = "NONE"
-
-        except Exception as e:
-
-            print(f"ERROR EN {pair}: {e}")
-
-# =========================
-# SCHEDULE
-# =========================
-
-schedule.every(15).minutes.do(analyze_market)
-
-# =========================
-# FIRST RUN
-# =========================
-
-analyze_market()
-
-# =========================
-# INFINITE LOOP
-# =========================
-
-while True:
-
-    schedule.run_pending()
-    time.sleep(1)
+    try:
+        response = requests.post(url,
+```
