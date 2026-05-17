@@ -39,6 +39,7 @@ last_signals = {}
 # TELEGRAM ALERT
 # =========================
 
+```python
 def send_telegram(message):
 
     if not TOKEN or not CHAT_ID:
@@ -53,4 +54,15 @@ def send_telegram(message):
     }
 
     try:
-        response = requests.post(url,
+
+        response = requests.post(
+            url,
+            data=data
+        )
+
+        print("Mensaje enviado:", response.text)
+
+    except Exception as e:
+
+        print("ERROR TELEGRAM:", e)
+```
