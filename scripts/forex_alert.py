@@ -1,4 +1,3 @@
-<> python
 import yfinance as yf
 from ta.momentum import RSIIndicator
 from ta.trend import MACD
