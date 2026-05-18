@@ -139,23 +139,24 @@ def analyze_market():
                 window=14
             ).rsi()
 
-            # =========================
-            # MACD M15
-            # =========================
+           # =========================
+# MACD M15
+# =========================
 
-            macd = MACD(close=close_m15)
+macd = MACD(close=close_m15)
 
-            df_m15["MACD"] = macd.macd()
-            df_m15["MACD_SIGNAL"] = macd.macd_signal()
+df_m15["MACD"] = macd.macd()
+df_m15["MACD_SIGNAL"] = macd.macd_signal()
 
-            # =========================
-            # EMA200
-            # =========================
+# =========================
+# EMA200
+# =========================
 
-            ema_m15 = get_ema(df_m15)
-            ema_h1 = get_ema(df_h1)
-            ema_h4 = get_ema(df_h4)
-            # =========================
+ema_m15 = get_ema(df_m15)
+ema_h1 = get_ema(df_h1)
+ema_h4 = get_ema(df_h4)
+
+# =========================
 # ATR
 # =========================
 
@@ -168,9 +169,9 @@ atr_indicator = AverageTrueRange(
 
 df_m15["ATR"] = atr_indicator.average_true_range()
 
-            # =========================
-            # LAST VALUES
-            # =========================
+# =========================
+# LAST VALUES
+# =========================
 
             price_m15 = close_m15.iloc[-1]
             price_h1 = close_h1.iloc[-1]
