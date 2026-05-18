@@ -65,11 +65,14 @@ def send_telegram(message):
 
 def analyze_market():
 
-    print("\n==============================")
-    print("ANALIZANDO MERCADO...")
+    print("\n=============================")
+    print("first run")
     print("==============================\n")
 
+    
     send_telegram("🚀 BOT ONLINE Y FUNCIONANDO")
+
+    analyze_market()
 
     for pair in PAIRS:
 
