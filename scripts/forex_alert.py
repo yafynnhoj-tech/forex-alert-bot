@@ -1,6 +1,7 @@
 import yfinance as yf
 from ta.momentum import RSIIndicator
 from ta.trend import MACD, EMAIndicator
+from ta.volatility import AverageTrueRange
 import requests
 import schedule
 import time
@@ -28,6 +29,9 @@ RSI_BUY = 30
 RSI_SELL = 70
 
 last_signals = {}
+wins = 0
+losses = 0
+total_trades = 0
 
 # =========================
 # TELEGRAM FUNCTION
@@ -151,6 +155,18 @@ def analyze_market():
             ema_m15 = get_ema(df_m15)
             ema_h1 = get_ema(df_h1)
             ema_h4 = get_ema(df_h4)
+            # =========================
+# ATR
+# =========================
+
+atr_indicator = AverageTrueRange(
+    high=df_m15["High"],
+    low=df_m15["Low"],
+    close=close_m15,
+    window=14
+)
+
+df_m15["ATR"] = atr_indicator.average_true_range()
 
             # =========================
             # LAST VALUES
@@ -163,6 +179,7 @@ def analyze_market():
             rsi = df_m15["RSI"].iloc[-1]
             macd_value = df_m15["MACD"].iloc[-1]
             signal = df_m15["MACD_SIGNAL"].iloc[-1]
+atr = df_m15["ATR"].iloc[-1]
 
             # =========================
             # TREND FILTERS
