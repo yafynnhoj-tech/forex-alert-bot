@@ -29,8 +29,7 @@ RSI_BUY = 30
 RSI_SELL = 70
 
 last_signals = {}
-wins = 0
-losses = 0
+
 total_trades = 0
 
 # =========================
@@ -84,6 +83,8 @@ def get_ema(df):
 
 def analyze_market():
 
+    global total_trades
+
     print("\n===================================")
     print("MULTI TIMEFRAME ANALYSIS")
     print("===================================\n")
@@ -131,7 +132,7 @@ def analyze_market():
             close_h4 = df_h4["Close"].squeeze()
 
             # =========================
-            # RSI M15
+            # RSI
             # =========================
 
             df_m15["RSI"] = RSIIndicator(
@@ -139,48 +140,48 @@ def analyze_market():
                 window=14
             ).rsi()
 
-           # =========================
-# MACD M15
-# =========================
+            # =========================
+            # MACD
+            # =========================
 
-macd = MACD(close=close_m15)
+            macd = MACD(close=close_m15)
 
-df_m15["MACD"] = macd.macd()
-df_m15["MACD_SIGNAL"] = macd.macd_signal()
+            df_m15["MACD"] = macd.macd()
+            df_m15["MACD_SIGNAL"] = macd.macd_signal()
 
-# =========================
-# EMA200
-# =========================
+            # =========================
+            # EMA200
+            # =========================
 
-ema_m15 = get_ema(df_m15)
-ema_h1 = get_ema(df_h1)
-ema_h4 = get_ema(df_h4)
+            ema_m15 = get_ema(df_m15)
+            ema_h1 = get_ema(df_h1)
+            ema_h4 = get_ema(df_h4)
 
-# =========================
-# ATR
-# =========================
+            # =========================
+            # ATR
+            # =========================
 
-atr_indicator = AverageTrueRange(
-    high=df_m15["High"],
-    low=df_m15["Low"],
-    close=close_m15,
-    window=14
-)
+            atr_indicator = AverageTrueRange(
+                high=df_m15["High"],
+                low=df_m15["Low"],
+                close=close_m15,
+                window=14
+            )
 
-df_m15["ATR"] = atr_indicator.average_true_range()
+            df_m15["ATR"] = atr_indicator.average_true_range()
 
-# =========================
-# LAST VALUES
-# =========================
-
-            price_m15 = close_m15.iloc[-1]
-            price_h1 = close_h1.iloc[-1]
-            price_h4 = close_h4.iloc[-1]
+            # =========================
+            # LAST VALUES
+            # =========================
 
             rsi = df_m15["RSI"].iloc[-1]
             macd_value = df_m15["MACD"].iloc[-1]
             signal = df_m15["MACD_SIGNAL"].iloc[-1]
-atr = df_m15["ATR"].iloc[-1]
+            atr = df_m15["ATR"].iloc[-1]
+
+            price_m15 = close_m15.iloc[-1]
+            price_h1 = close_h1.iloc[-1]
+            price_h4 = close_h4.iloc[-1]
 
             # =========================
             # TREND FILTERS
@@ -198,6 +199,7 @@ atr = df_m15["ATR"].iloc[-1]
 
             print(
                 f"{pair} | "
+                f"PRICE: {price_m15:.4f} | "
                 f"RSI: {rsi:.2f} | "
                 f"MACD: {macd_value:.4f}"
             )
@@ -209,17 +211,28 @@ atr = df_m15["ATR"].iloc[-1]
             if (
                 rsi < RSI_BUY
                 and macd_value > signal
-                and price_m15 > ema_m15
                 and bullish_h1
                 and bullish_h4
             ):
 
                 if last_signals.get(pair) != "BUY":
 
+                    entry = price_m15
+                    sl = entry - (atr * 1.5)
+                    tp = entry + ((entry - sl) * 2)
+
                     message = f"""
 🟢 BUY SIGNAL
 
 PAIR: {pair}
+
+ENTRY: {entry:.4f}
+
+STOP LOSS: {sl:.4f}
+
+TAKE PROFIT: {tp:.4f}
+
+RISK REWARD: 2:1
 
 RSI: {rsi:.2f}
 
@@ -233,6 +246,10 @@ MACD CONFIRMED ✅
                     print(message)
 
                     send_telegram(message)
+
+                    total_trades += 1
+
+                    print(f"TOTAL TRADES: {total_trades}")
 
                     last_signals[pair] = "BUY"
 
@@ -243,17 +260,28 @@ MACD CONFIRMED ✅
             elif (
                 rsi > RSI_SELL
                 and macd_value < signal
-                and price_m15 < ema_m15
                 and bearish_h1
                 and bearish_h4
             ):
 
                 if last_signals.get(pair) != "SELL":
 
+                    entry = price_m15
+                    sl = entry + (atr * 1.5)
+                    tp = entry - ((sl - entry) * 2)
+
                     message = f"""
 🔴 SELL SIGNAL
 
 PAIR: {pair}
+
+ENTRY: {entry:.4f}
+
+STOP LOSS: {sl:.4f}
+
+TAKE PROFIT: {tp:.4f}
+
+RISK REWARD: 2:1
 
 RSI: {rsi:.2f}
 
@@ -267,6 +295,10 @@ MACD CONFIRMED ✅
                     print(message)
 
                     send_telegram(message)
+
+                    total_trades += 1
+
+                    print(f"TOTAL TRADES: {total_trades}")
 
                     last_signals[pair] = "SELL"
 
