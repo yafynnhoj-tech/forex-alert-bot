@@ -70,9 +70,6 @@ def analyze_market():
     print("==============================\n")
 
     
-    send_telegram("🚀 BOT ONLINE Y FUNCIONANDO")
-
-    analyze_market()
 
     for pair in PAIRS:
 
@@ -155,20 +152,29 @@ MACD CONFIRMED ✅
             print(f"ERROR EN {pair}: {e}")
 
 # =========================
+
 # SCHEDULE
+
 # =========================
 
 schedule.every(15).minutes.do(analyze_market)
 
 # =========================
+
 # FIRST RUN
+
 # =========================
+
+print("BOT INICIADO")
 
 analyze_market()
 
 # =========================
+
 # LOOP
+
 # =========================
+
 
 while True:
 
