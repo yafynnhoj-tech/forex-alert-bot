@@ -60,69 +60,119 @@ def send_telegram(message):
         print("ERROR TELEGRAM:", e)
 
 # =========================
+# EMA FUNCTION
+# =========================
+
+def get_ema(df):
+
+    close_prices = df["Close"].squeeze()
+
+    ema = EMAIndicator(
+        close=close_prices,
+        window=200
+    )
+
+    return ema.ema_indicator().iloc[-1]
+
+# =========================
 # ANALYSIS
 # =========================
 
 def analyze_market():
 
-    print("\n=============================")
-    print("ANALIZANDO MERCADO")
-    print("==============================\n")
+    print("\n===================================")
+    print("MULTI TIMEFRAME ANALYSIS")
+    print("===================================\n")
 
     for pair in PAIRS:
 
         try:
 
             # =========================
-            # DOWNLOAD DATA
+            # M15 DATA
             # =========================
 
-            df = yf.download(
+            df_m15 = yf.download(
                 pair,
                 period="5d",
                 interval="15m"
             )
 
-            close_prices = df["Close"].squeeze()
-
             # =========================
-            # RSI
+            # H1 DATA
             # =========================
 
-            df["RSI"] = RSIIndicator(
-                close=close_prices,
+            df_h1 = yf.download(
+                pair,
+                period="1mo",
+                interval="1h"
+            )
+
+            # =========================
+            # H4 DATA
+            # =========================
+
+            df_h4 = yf.download(
+                pair,
+                period="3mo",
+                interval="4h"
+            )
+
+            # =========================
+            # CLOSE PRICES
+            # =========================
+
+            close_m15 = df_m15["Close"].squeeze()
+            close_h1 = df_h1["Close"].squeeze()
+            close_h4 = df_h4["Close"].squeeze()
+
+            # =========================
+            # RSI M15
+            # =========================
+
+            df_m15["RSI"] = RSIIndicator(
+                close=close_m15,
                 window=14
             ).rsi()
 
             # =========================
-            # MACD
+            # MACD M15
             # =========================
 
-            macd = MACD(close=close_prices)
+            macd = MACD(close=close_m15)
 
-            df["MACD"] = macd.macd()
-            df["MACD_SIGNAL"] = macd.macd_signal()
+            df_m15["MACD"] = macd.macd()
+            df_m15["MACD_SIGNAL"] = macd.macd_signal()
 
             # =========================
-            # EMA 200
+            # EMA200
             # =========================
 
-            ema_200 = EMAIndicator(
-                close=close_prices,
-                window=200
-            )
-
-            df["EMA200"] = ema_200.ema_indicator()
+            ema_m15 = get_ema(df_m15)
+            ema_h1 = get_ema(df_h1)
+            ema_h4 = get_ema(df_h4)
 
             # =========================
             # LAST VALUES
             # =========================
 
-            rsi = df["RSI"].iloc[-1]
-            macd_value = df["MACD"].iloc[-1]
-            signal = df["MACD_SIGNAL"].iloc[-1]
-            ema200 = df["EMA200"].iloc[-1]
-            price = close_prices.iloc[-1]
+            price_m15 = close_m15.iloc[-1]
+            price_h1 = close_h1.iloc[-1]
+            price_h4 = close_h4.iloc[-1]
+
+            rsi = df_m15["RSI"].iloc[-1]
+            macd_value = df_m15["MACD"].iloc[-1]
+            signal = df_m15["MACD_SIGNAL"].iloc[-1]
+
+            # =========================
+            # TREND FILTERS
+            # =========================
+
+            bullish_h1 = price_h1 > ema_h1
+            bullish_h4 = price_h4 > ema_h4
+
+            bearish_h1 = price_h1 < ema_h1
+            bearish_h4 = price_h4 < ema_h4
 
             # =========================
             # PRINT STATUS
@@ -130,10 +180,8 @@ def analyze_market():
 
             print(
                 f"{pair} | "
-                f"PRICE: {price:.4f} | "
                 f"RSI: {rsi:.2f} | "
-                f"MACD: {macd_value:.4f} | "
-                f"EMA200: {ema200:.4f}"
+                f"MACD: {macd_value:.4f}"
             )
 
             # =========================
@@ -143,7 +191,9 @@ def analyze_market():
             if (
                 rsi < RSI_BUY
                 and macd_value > signal
-                and price > ema200
+                and price_m15 > ema_m15
+                and bullish_h1
+                and bullish_h4
             ):
 
                 if last_signals.get(pair) != "BUY":
@@ -153,11 +203,11 @@ def analyze_market():
 
 PAIR: {pair}
 
-PRICE: {price:.4f}
-
 RSI: {rsi:.2f}
 
-EMA200 FILTER ✅
+M15 TREND ✅
+H1 TREND ✅
+H4 TREND ✅
 
 MACD CONFIRMED ✅
 """
@@ -175,7 +225,9 @@ MACD CONFIRMED ✅
             elif (
                 rsi > RSI_SELL
                 and macd_value < signal
-                and price < ema200
+                and price_m15 < ema_m15
+                and bearish_h1
+                and bearish_h4
             ):
 
                 if last_signals.get(pair) != "SELL":
@@ -185,11 +237,11 @@ MACD CONFIRMED ✅
 
 PAIR: {pair}
 
-PRICE: {price:.4f}
-
 RSI: {rsi:.2f}
 
-EMA200 FILTER ✅
+M15 TREND ✅
+H1 TREND ✅
+H4 TREND ✅
 
 MACD CONFIRMED ✅
 """
@@ -199,10 +251,6 @@ MACD CONFIRMED ✅
                     send_telegram(message)
 
                     last_signals[pair] = "SELL"
-
-            # =========================
-            # NO SIGNAL
-            # =========================
 
             else:
 
