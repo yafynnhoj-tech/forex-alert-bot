@@ -161,12 +161,21 @@ def analyze_market():
             # ATR
             # =========================
 
+                        # =========================
+            # ATR
+            # =========================
+
+            high_prices = df_m15["High"].squeeze()
+            low_prices = df_m15["Low"].squeeze()
+
             atr_indicator = AverageTrueRange(
-                high=df_m15["High"],
-                low=df_m15["Low"],
+                high=high_prices,
+                low=low_prices,
                 close=close_m15,
                 window=14
             )
+
+        
 
             df_m15["ATR"] = atr_indicator.average_true_range()
 
