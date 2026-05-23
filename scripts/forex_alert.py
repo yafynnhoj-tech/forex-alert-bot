@@ -1,3 +1,4 @@
+import json
 import yfinance as yf
 from ta.momentum import RSIIndicator
 from ta.trend import MACD, EMAIndicator
@@ -53,8 +54,43 @@ total_trades = 0
 
 def send_telegram(message):
     signal_data = {
+
     "PAR": pair,
+
+    "PRECIO": round(price, 5),
+
+    "RSI": round(rsi, 2),
+
+    "TENDENCIA": trend,
+
     "SEÑAL": "BUY",
+
+    "SL": round(stop_loss, 5),
+
+    "TP": round(take_profit, 5),
+
+    "WINRATE": f"{winrate}%"
+
+}
+
+try:
+
+    with open("signals.json", "r") as file:
+
+        signals = json.load(file)
+
+except:
+
+    signals = []
+
+signals.append(signal_data)
+
+with open("signals.json", "w") as file:
+
+    json.dump(signals, file, indent=4)  
+    signal_data = {
+    "PAR": pair,
+    "SEÑAL": "SELL",
     "RSI": round(rsi, 2),
     "PRECIO": round(price, 5),
     "SL": round(stop_loss, 5),
