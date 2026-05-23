@@ -4,112 +4,148 @@ import random
 import time
 
 # =========================
-# PAGE CONFIG
+# CONFIG PAGE
 # =========================
 
 st.set_page_config(
-    page_title="FOREX AI DASHBOARD",
+    page_title="Forex AI Dashboard",
     layout="wide"
 )
 
 # =========================
-# TITLE
+# TITULO
 # =========================
 
-st.title("🚀 FOREX AI DASHBOARD")
+st.title("🚀 FOREX AI DASHBOARD PRO")
 
 st.markdown("---")
 
 # =========================
-# FAKE REALTIME DATA
+# PARES FOREX
 # =========================
 
-pairs_data = [
-
-    {
-        "PAIR": "EURUSD",
-        "PRICE": round(random.uniform(1.05, 1.20), 5),
-        "RSI": round(random.uniform(20, 80), 2),
-        "TREND": random.choice(["BULLISH", "BEARISH"]),
-        "SIGNAL": random.choice(["BUY", "SELL", "WAIT"]),
-        "SL": round(random.uniform(1.05, 1.15), 5),
-        "TP": round(random.uniform(1.15, 1.25), 5),
-        "WINRATE": f"{random.randint(60,90)}%"
-    },
-
-    {
-        "PAIR": "GBPUSD",
-        "PRICE": round(random.uniform(1.20, 1.40), 5),
-        "RSI": round(random.uniform(20, 80), 2),
-        "TREND": random.choice(["BULLISH", "BEARISH"]),
-        "SIGNAL": random.choice(["BUY", "SELL", "WAIT"]),
-        "SL": round(random.uniform(1.20, 1.30), 5),
-        "TP": round(random.uniform(1.30, 1.40), 5),
-        "WINRATE": f"{random.randint(60,90)}%"
-    },
-
-    {
-        "PAIR": "USDJPY",
-        "PRICE": round(random.uniform(140, 165), 3),
-        "RSI": round(random.uniform(20, 80), 2),
-        "TREND": random.choice(["BULLISH", "BEARISH"]),
-        "SIGNAL": random.choice(["BUY", "SELL", "WAIT"]),
-        "SL": round(random.uniform(140, 155), 3),
-        "TP": round(random.uniform(155, 165), 3),
-        "WINRATE": f"{random.randint(60,90)}%"
-    },
-
-    {
-        "PAIR": "AUDUSD",
-        "PRICE": round(random.uniform(0.60, 0.75), 5),
-        "RSI": round(random.uniform(20, 80), 2),
-        "TREND": random.choice(["BULLISH", "BEARISH"]),
-        "SIGNAL": random.choice(["BUY", "SELL", "WAIT"]),
-        "SL": round(random.uniform(0.60, 0.70), 5),
-        "TP": round(random.uniform(0.70, 0.80), 5),
-        "WINRATE": f"{random.randint(60,90)}%"
-    }
-
+pairs = [
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "AUDUSD",
+    "USDCAD",
+    "USDCHF",
+    "NZDUSD",
+    "EURJPY",
+    "GBPJPY",
+    "EURGBP",
+    "XAUUSD",
+    "BTCUSD"
 ]
+
+# =========================
+# METRICAS SUPERIORES
+# =========================
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("📊 PARES ACTIVOS", len(pairs))
+
+with col2:
+    st.metric("🟢 ESTADO BOT", "ONLINE")
+
+with col3:
+    st.metric("🌎 MERCADO", "FOREX")
+
+with col4:
+    st.metric("🤖 IA", "ACTIVA")
+
+st.markdown("---")
+
+# =========================
+# DATA
+# =========================
+
+data = []
+
+for pair in pairs:
+
+    signal = random.choice(["BUY", "SELL", "WAIT"])
+
+    if signal == "BUY":
+        trend = "ALCISTA"
+
+    elif signal == "SELL":
+        trend = "BAJISTA"
+
+    else:
+        trend = "LATERAL"
+
+    data.append({
+
+        "PAR": pair,
+
+        "PRECIO": round(random.uniform(1, 200), 4),
+
+        "RSI": round(random.uniform(20, 80), 2),
+
+        "TENDENCIA": trend,
+
+        "SEÑAL": signal,
+
+        "SL": round(random.uniform(1, 200), 4),
+
+        "TP": round(random.uniform(1, 200), 4),
+
+        "WINRATE": f"{random.randint(65,95)}%"
+
+    })
 
 # =========================
 # DATAFRAME
 # =========================
 
-df = pd.DataFrame(pairs_data)
+df = pd.DataFrame(data)
 
 # =========================
-# METRICS
+# COLOR HEATMAP
 # =========================
 
-col1, col2, col3, col4 = st.columns(4)
+def color_signal(val):
 
-col1.metric("ACTIVE PAIRS", "4")
-col2.metric("ONLINE STATUS", "RUNNING")
-col3.metric("MARKET", "FOREX")
-col4.metric("AI STATUS", "ACTIVE")
+    if val == "BUY":
+        return "background-color: green; color: white"
 
-st.markdown("---")
+    elif val == "SELL":
+        return "background-color: red; color: white"
+
+    elif val == "WAIT":
+        return "background-color: orange; color: black"
+
+    return ""
 
 # =========================
-# TABLE
+# TABLA PROFESIONAL
 # =========================
+
+styled_df = df.style.map(
+    color_signal,
+    subset=["SEÑAL"]
+)
 
 st.dataframe(
-    df,
+    styled_df,
     use_container_width=True,
-    hide_index=True
+    height=500
 )
 
 # =========================
-# FOOTER
+# STATUS
 # =========================
 
-st.success("✅ AI DASHBOARD ONLINE")
+st.success("✅ DASHBOARD IA ONLINE")
 
 # =========================
 # AUTO REFRESH
 # =========================
 
 time.sleep(5)
+
 st.rerun()

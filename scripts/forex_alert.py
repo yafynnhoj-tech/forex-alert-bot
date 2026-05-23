@@ -6,7 +6,7 @@ import requests
 import schedule
 import time
 import os
-
+import json
 # =========================
 # TELEGRAM
 # =========================
@@ -19,10 +19,25 @@ CHAT_ID = os.getenv("CHAT_ID")
 # =========================
 
 PAIRS = [
+
+    # MAJORS
     "EURUSD=X",
     "GBPUSD=X",
     "USDJPY=X",
-    "AUDUSD=X"
+    "AUDUSD=X",
+    "USDCAD=X",
+    "USDCHF=X",
+    "NZDUSD=X",
+
+    # CROSSES
+    "EURGBP=X",
+    "EURJPY=X",
+    "GBPJPY=X",
+    "EURAUD=X",
+    "GBPAUD=X",
+
+    # GOLD
+    "GC=F"
 ]
 
 RSI_BUY = 30
@@ -37,6 +52,27 @@ total_trades = 0
 # =========================
 
 def send_telegram(message):
+    signal_data = {
+    "PAR": pair,
+    "SEÑAL": "BUY",
+    "RSI": round(rsi, 2),
+    "PRECIO": round(price, 5),
+    "SL": round(stop_loss, 5),
+    "TP": round(take_profit, 5)
+}
+
+try:
+
+    with open("signals.json", "r") as file:
+        signals = json.load(file)
+
+except:
+    signals = []
+
+signals.append(signal_data)
+
+with open("signals.json", "w") as file:
+    json.dump(signals, file, indent=4)
 
     if not TOKEN or not CHAT_ID:
         print("ERROR: TOKEN o CHAT_ID faltan")
