@@ -1,3 +1,4 @@
+from streamlit_autorefresh import st_autorefresh
 import streamlit as st
 import pandas as pd
 import json
@@ -9,8 +10,9 @@ import json
 st.set_page_config(
     page_title="Forex AI Dashboard",
     layout="wide"
+    
 )
-
+st_autorefresh(interval=5000, key="refresh")
 # =========================
 # TITLE
 # =========================

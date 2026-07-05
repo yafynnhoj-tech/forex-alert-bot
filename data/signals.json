@@ -1,0 +1,100 @@
+[
+    {
+        "PAR": "GBPAUD=X",
+        "SEÑAL": "SELL",
+        "PRECIO": 1.9235600233078003,
+        "RSI": 39.63,
+        "EMA": 1.92557,
+        "ATR": 0.00105,
+        "TENDENCIA": "BEARISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD bajista",
+            "Precio bajo EMA200"
+        ]
+    },
+    {
+        "PAR": "EURAUD=X",
+        "SEÑAL": "SELL",
+        "PRECIO": 1.6472899913787842,
+        "RSI": 32.6,
+        "EMA": 1.65048,
+        "ATR": 0.0009,
+        "TENDENCIA": "BEARISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD bajista",
+            "Precio bajo EMA200"
+        ]
+    },
+    {
+        "PAR": "NZDUSD=X",
+        "SEÑAL": "BUY",
+        "PRECIO": 0.5712000727653503,
+        "RSI": 57.43,
+        "EMA": 0.57003,
+        "ATR": 0.00012,
+        "TENDENCIA": "BULLISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD alcista",
+            "Precio sobre EMA200"
+        ]
+    },
+    {
+        "PAR": "USDCHF=X",
+        "SEÑAL": "SELL",
+        "PRECIO": 0.8026900291442871,
+        "RSI": 34.15,
+        "EMA": 0.80451,
+        "ATR": 0.00044,
+        "TENDENCIA": "BEARISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD bajista",
+            "Precio bajo EMA200"
+        ]
+    },
+    {
+        "PAR": "AUDUSD=X",
+        "SEÑAL": "BUY",
+        "PRECIO": 0.6942998170852661,
+        "RSI": 61.86,
+        "EMA": 0.69267,
+        "ATR": 0.00013,
+        "TENDENCIA": "BULLISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD alcista",
+            "Precio sobre EMA200"
+        ]
+    },
+    {
+        "PAR": "USDJPY=X",
+        "SEÑAL": "SELL",
+        "PRECIO": 161.33700561523438,
+        "RSI": 55.55,
+        "EMA": 161.45686,
+        "ATR": 0.06171,
+        "TENDENCIA": "BEARISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD bajista",
+            "Precio bajo EMA200"
+        ]
+    },
+    {
+        "PAR": "EURUSD=X",
+        "SEÑAL": "BUY",
+        "PRECIO": 1.1440337896347046,
+        "RSI": 41.24,
+        "EMA": 1.14326,
+        "ATR": 0.0002,
+        "TENDENCIA": "BULLISH",
+        "CONFIANZA": 75,
+        "MOTIVOS": [
+            "MACD alcista",
+            "Precio sobre EMA200"
+        ]
+    }
+]
